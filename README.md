@@ -1,0 +1,106 @@
+# Order Pulling — PMI Tape
+
+A standalone React app for **pulling/verifying orders against a scanner**. Scan the
+barcode on a packing list to pull the matching Sales Order from Zoho Inventory, then
+scan each case to count it down. The app warns immediately on a wrong item or an
+over-scan, and records the lot number of every case scanned.
+
+It shares the look, logo, and Zoho connection approach of the **Order Entry App**.
+
+---
+
+## How it works
+
+1. **Scan the packing list barcode.** It encodes the **Sales Order number**. The app
+   pulls that order from Zoho Inventory — draft, open, or closed all work.
+2. The **Pick List** screen lists every line with its ordered **Qty**, **U/M**,
+   **Cases**, **Item #**, **Description**, **Units/Case**, and **Cases left to Scan**.
+3. **Scan each case.** Case barcodes are in the format:
+
+   ```
+   ItemNumber,Quantity(units),LotNumber
+   ```
+
+   e.g. `RIS2260,36,LOT24A`. Each scan reduces **Cases left to Scan** for that item
+   (by `Quantity ÷ Units per Case`) and stores the lot number.
+4. **Warnings (immediate, stop-and-restart):**
+   - **Wrong item** — the scanned item isn't on the order.
+   - **Too many** — scanning that case would exceed the ordered quantity.
+
+   Either one shows a red banner and blocks further scanning until you press **Clear**.
+5. **Clear** wipes every scan for the order so you can restart scanning the same order.
+6. **Done Scanning** returns to the barcode screen for the next order (it confirms first
+   if cases are still outstanding).
+
+Captured lot numbers appear under each row and in the collapsible **Scan log**.
+
+---
+
+## Configuration (Netlify environment variables)
+
+Zoho credentials live only in the serverless function — they are never sent to the
+browser. Set these in **Netlify → Site settings → Environment variables**:
+
+| Variable | Required | Notes |
+| --- | --- | --- |
+| `ZOHO_CLIENT_ID` | yes | |
+| `ZOHO_CLIENT_SECRET` | yes | |
+| `ZOHO_ORGANIZATION_ID` | yes | |
+| `ZOHO_REFRESH_TOKEN` | optional | Set for the refresh-token grant. Leave unset to use the client-credentials grant (same as the Order Entry App). |
+| `ZOHO_SCOPE` | optional | Defaults include `ZohoInventory.salesorders.READ` + `ZohoInventory.items.READ`. |
+| `ZOHO_DOMAIN` | optional | Only if you are not on Zoho US. |
+
+You can copy the same Zoho values you already use for the Order Entry App.
+
+---
+
+## Deploying to Netlify without GitHub
+
+This app has a build step **and** a serverless function, so the simplest no-Git path is
+the Netlify CLI (drag-and-drop only uploads static files and skips functions/build).
+
+```bash
+# one-time
+npm install -g netlify-cli
+netlify login
+
+# from inside this folder
+npm install
+netlify init        # choose "Create & configure a new site" (no Git required)
+                    # set the env vars above, here or in the dashboard
+netlify deploy --build --prod
+```
+
+`netlify deploy --build` runs `npm run build` and bundles
+`netlify/functions/zoho-salesorder.js` automatically. Re-run that last command any time
+you want to push an update.
+
+For local testing: `netlify dev` (serves the React app and the function together with
+your `.env`).
+
+---
+
+## Project structure
+
+```
+Order Pulling/
+├── netlify.toml
+├── package.json
+├── .env.example
+├── public/index.html
+├── netlify/functions/
+│   ├── zoho-utils.js          # shared Zoho OAuth + GET (copied from Order Entry App)
+│   └── zoho-salesorder.js     # look up a sales order by number, enrich with units/case
+└── src/
+    ├── App.js                 # header (logo + "Order Pulling") + screen switch
+    ├── App.css                # Order Entry App design tokens + pick-list styles
+    ├── logo.js                # PMI Tape logo (copied from Order Entry App)
+    ├── components/
+    │   ├── ScanGate.js        # scan/enter the sales order barcode
+    │   ├── PickList.js        # the pick list + scanning logic
+    │   ├── Toast.js
+    │   └── ErrorBoundary.js
+    └── lib/
+        ├── zoho.js            # frontend API helper
+        └── scan.js            # barcode parsing + helpers
+```

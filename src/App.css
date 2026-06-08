@@ -1,0 +1,657 @@
+/* ─── Design Tokens — exact match to Bill Upload ─────────────────── */
+:root {
+  --bg:      #fff;
+  --bg2:     #f7f7f5;
+  --text:    #1a1a1a;
+  --text2:   #6b6b6b;
+  --text3:   #9a9a9a;
+  --border:  rgba(0,0,0,.12);
+  --border2: rgba(0,0,0,.22);
+  --success: #3b6d11;
+  --danger:  #a32d2d;
+  --warn-bg: #fef9ec;
+  --warn:    #7a5700;
+  --radius:  8px;
+  --radius-lg: 12px;
+
+  /* extras used by the portal */
+  --readonly-bg:     #f7f7f5;
+  --readonly-border: rgba(0,0,0,.09);
+  --readonly-text:   #9a9a9a;
+  --accent:          #1a1a1a;
+  --accent-glow:     rgba(0,0,0,.06);
+  --green:           #3b6d11;
+  --green-bg:        #eaf3de;
+  --red:             #a32d2d;
+  --red-bg:          #fcebeb;
+  --font-sans:       -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:       'SF Mono', 'Fira Mono', 'Courier New', monospace;
+  --shadow-sm:       0 1px 3px rgba(0,0,0,.07);
+  --shadow:          0 4px 16px rgba(0,0,0,.08);
+  --shadow-md:       0 2px 8px rgba(0,0,0,.08);
+}
+
+/* ─── Reset ───────────────────────────────────────────────────────── */
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg2);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── App Shell ───────────────────────────────────────────────────── */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* Header — exact Bill Upload styling */
+.app-header {
+  background: var(--bg);
+  border-bottom: .5px solid var(--border);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+.header-logo { height: 28px; width: auto; }
+.header-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(0,0,0,.15);
+  margin: 0 12px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.header-page-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.app-main {
+  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ─── Buttons — exact Bill Upload ─────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: .5px solid var(--border2);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--bg2); }
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+/* Primary = Bill Upload's .btn.p */
+.btn-primary {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+.btn-primary:hover:not(:disabled) { opacity: .85; background: var(--text); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text2);
+  border-color: var(--border);
+}
+.btn-ghost:hover:not(:disabled) { background: var(--bg2); color: var(--text); }
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border-color: transparent;
+}
+.btn-danger:hover:not(:disabled) { background: var(--red-bg); }
+
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+
+/* ─── Form Fields ─────────────────────────────────────────────────── */
+.field-group { display: flex; flex-direction: column; gap: 4px; }
+.field-label {
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 500;
+}
+.field-input {
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  border: .5px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  width: 100%;
+  outline: none;
+  transition: border-color .15s;
+}
+.field-input:focus { border-color: var(--text); }
+.field-input.readonly {
+  background: var(--bg2);
+  border-color: var(--border);
+  color: var(--text3);
+  cursor: default;
+}
+
+/* ─── Sections / Cards ────────────────────────────────────────────── */
+.section {
+  background: var(--bg);
+  border: .5px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .875rem 1.5rem;
+  border-bottom: .5px solid var(--border);
+  background: var(--bg);
+}
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text);
+}
+.section-body { padding: 1.25rem 1.5rem; }
+
+/* ─── Grids ───────────────────────────────────────────────────────── */
+.field-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; }
+.field-grid-2 { grid-template-columns: 1fr 1fr; gap: 12px; }
+.field-grid-3 { grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.field-grid-4 { grid-template-columns: repeat(4,1fr); gap: 12px; }
+
+@media (max-width: 768px) {
+  .field-grid,.field-grid-2,.field-grid-3,.field-grid-4 { grid-template-columns: 1fr; }
+  .app-main { padding: 1rem 1rem 3rem; }
+  .app-header { height: 80px; padding-top: 8px; }
+}
+
+/* ─── Badges ──────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  letter-spacing: .02em;
+}
+.badge-blue  { background: #e8f0fe; color: #1a56db; }
+.badge-green { background: #eaf3de; color: var(--success); }
+.badge-gray  { background: var(--bg2); color: var(--text3); border: .5px solid var(--border); }
+
+/* ─── Toast ───────────────────────────────────────────────────────── */
+.toast-container {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  display: flex; flex-direction: column; gap: 8px; z-index: 9999;
+}
+.toast {
+  background: var(--bg);
+  border: .5px solid var(--border2);
+  border-radius: var(--radius);
+  padding: .75rem 1rem;
+  font-size: 13px;
+  min-width: 240px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  animation: slideUp .2s ease;
+  display: flex; align-items: center; gap: 8px;
+  color: var(--text);
+}
+.toast-success { border-left: 3px solid var(--success); }
+.toast-error   { border-left: 3px solid var(--danger); }
+@keyframes slideUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ─── Spinner — exact Bill Upload ─────────────────────────────────── */
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--text);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-state {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 3rem; color: var(--text2); font-size: 13px;
+}
+
+/* ─── Modal ───────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.35);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 1rem;
+  animation: fadeIn .15s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+  background: var(--bg);
+  border: .5px solid var(--border2);
+  border-radius: var(--radius-lg);
+  width: 100%; max-width: 520px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.12);
+  animation: scaleIn .15s ease;
+}
+@keyframes scaleIn {
+  from { transform: scale(.98); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: .5px solid var(--border);
+}
+.modal-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.modal-body  { padding: 1.25rem; display: flex; flex-direction: column; gap: 12px; }
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding: 1rem 1.25rem;
+  border-top: .5px solid var(--border);
+}
+.modal-close {
+  background: none; border: none;
+  color: var(--text3); cursor: pointer;
+  font-size: 1.1rem; line-height: 1; padding: 2px;
+  transition: color .12s;
+}
+.modal-close:hover { color: var(--text); }
+
+/* ─── Scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* Hide number input spinners */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+/* ─── Order Entry — upload dropzone ───────────────────────────────── */
+.dropzone {
+  border: 1.5px dashed var(--border2);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.dropzone:hover { border-color: var(--text); background: var(--bg2); }
+.dropzone.drag  { border-color: var(--text); background: var(--accent-glow); }
+.dropzone-icon  { width: 40px; height: 40px; color: var(--text3); margin: 0 auto .75rem; }
+.dropzone-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.dropzone-sub   { font-size: 12px; color: var(--text2); }
+
+/* ─── Order Entry — summary metrics ───────────────────────────────── */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+@media (max-width: 768px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } }
+.metric {
+  background: var(--bg2);
+  padding: 12px 14px;
+}
+.metric-label {
+  font-size: 10.5px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px;
+}
+.metric-value { font-size: 18px; font-weight: 600; color: var(--text); }
+.metric-value small { font-size: 12px; font-weight: 500; color: var(--text2); }
+
+/* ─── Order Entry — items table (mirrors pricing table look) ───────── */
+.ot-table { width: 100%; border-collapse: collapse; font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.ot-th { padding: 7px 10px; text-align: left; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .07em; color: var(--text3);
+  background: var(--bg2); border-bottom: .5px solid var(--border); white-space: nowrap; }
+.ot-td { padding: 7px 10px; border-bottom: .5px solid var(--border); color: var(--text);
+  vertical-align: middle; background: var(--bg); font-size: 13px; }
+.ot-row:hover td { background: var(--bg2); }
+.ot-num { text-align: center; font-variant-numeric: tabular-nums; }
+.ot-item { font-weight: 600; }
+.ot-edit { width: 64px; text-align: center; font-family: inherit; font-size: 13px;
+  border: .5px solid var(--border2); border-radius: 6px; padding: 4px 6px; color: var(--text);
+  background: var(--bg); outline: none; }
+.ot-edit:focus { border-color: var(--text); }
+.ot-foot td { padding: 9px 10px; font-weight: 600; background: var(--bg2);
+  border-top: .5px solid var(--border2); }
+
+.excluded-row { background: var(--warn-bg); }
+.excluded-row td { color: var(--warn); font-size: 12px; }
+
+/* ─── Print (packing list = Letter, pallet labels = 6x4) ──────────── */
+/* The multi-copy print block is hidden on screen; the print stylesheet reveals it. */
+.packing-print { display: none; }
+@media print {
+  #root { display: none !important; }
+  .no-print { display: none !important; }
+  /* Both print overlays hidden by default; the print-intent class on <html> reveals one. */
+  .packing-overlay, .pallet-overlay { display: none !important; }
+
+  /* Packing list */
+  html.printing-packing .packing-overlay {
+    position: static !important;
+    display: block !important;
+    background: none !important;
+    padding: 0 !important;
+  }
+  html.printing-packing .packing-overlay .modal {
+    position: static !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+  }
+  html.printing-packing .packing-list {
+    width: 100% !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+  }
+  /* Multi-copy print output: reveal it; each sheet is one padded page. */
+  html.printing-packing .packing-print { display: block !important; }
+  html.printing-packing .pl-sheet {
+    padding: 0.5in !important;
+    box-sizing: border-box !important;
+    page-break-after: always;
+    break-after: page;
+  }
+  html.printing-packing .pl-sheet:last-child { page-break-after: auto; break-after: auto; }
+  html.printing-packing .usmca-page {
+    width: 100% !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Pallet labels — one 6x4 page per label */
+  html.printing-labels .pallet-overlay {
+    position: static !important;
+    display: block !important;
+    background: none !important;
+    padding: 0 !important;
+  }
+  html.printing-labels .pallet-overlay .modal {
+    position: static !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+  }
+  html.printing-labels .pallet-wrap { padding: 0 !important; display: block !important; gap: 0 !important; }
+  /* Each label prints on a portrait 4x6 page; the 6x4 layout is rotated 90° to fit. */
+  html.printing-labels .pallet-page {
+    width: 4in !important;
+    height: 6in !important;
+    position: relative !important;
+    overflow: hidden !important;
+    page-break-after: always;
+    break-after: page;
+  }
+  html.printing-labels .pallet-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+  html.printing-labels .pallet-label {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 6in !important;
+    height: 4in !important;
+    margin: 0 !important;
+    border: none !important;
+    transform: translate(4in, 0) rotate(90deg);
+    transform-origin: 0 0;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Order Pulling — scan gate + pick list
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Scan gate (load a sales order) ─────────────────────────────────── */
+.scan-gate {
+  display: flex;
+  justify-content: center;
+  padding-top: 4vh;
+}
+.scan-card {
+  background: var(--bg);
+  border: .5px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 2.25rem 2rem;
+  max-width: 480px;
+  width: 100%;
+}
+.scan-card-eyebrow {
+  font-size: 11px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px;
+}
+.scan-card-title { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.scan-card-sub   { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 1.5rem; }
+
+.scan-gate-input-row { display: flex; gap: 10px; }
+.scan-gate-input {
+  flex: 1;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  color: var(--text);
+  background: var(--bg);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.scan-gate-input:focus { border-color: var(--success); box-shadow: 0 0 0 3px rgba(59,109,17,.12); }
+.scan-gate-btn { white-space: nowrap; }
+.scan-gate-error {
+  margin-top: 14px;
+  background: var(--red-bg);
+  border: .5px solid rgba(163,45,45,.25);
+  color: var(--danger);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 13px;
+}
+.scan-gate-hint { margin-top: 14px; font-size: 12px; color: var(--text3); line-height: 1.5; }
+
+/* ── Pick list — controls row ───────────────────────────────────────── */
+.pl-wrap { display: flex; flex-direction: column; gap: 16px; }
+
+.pl-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.pl-meta { display: flex; flex-direction: column; gap: 4px; }
+.pl-meta-row { display: flex; align-items: baseline; gap: 10px; font-size: 14px; }
+.pl-meta-label { color: var(--text2); min-width: 96px; }
+.pl-meta-val   { font-weight: 600; color: var(--text); }
+
+.pl-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.pl-totals { display: flex; flex-direction: column; gap: 2px; text-align: right; }
+.pl-total-row { display: flex; gap: 10px; justify-content: flex-end; font-size: 13.5px; }
+.pl-total-label { color: var(--text2); }
+.pl-total-val { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; min-width: 48px; text-align: right; }
+.pl-carrier { color: var(--text2); font-style: italic; }
+.pl-clear { align-self: flex-end; }
+
+/* ── Scan bar (the focused green field) ─────────────────────────────── */
+.pl-scanbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg);
+  border: 1.5px solid var(--success);
+  box-shadow: 0 0 0 3px rgba(59,109,17,.10);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+.pl-scan-label { font-size: 12px; font-weight: 600; color: var(--success); text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
+.pl-scan-input {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  outline: none;
+  min-width: 120px;
+}
+.pl-scan-input::placeholder { color: var(--text3); font-family: var(--font-sans); }
+.pl-scan-hint { font-size: 12px; color: var(--text3); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* ── Banners ────────────────────────────────────────────────────────── */
+.pl-banner {
+  display: flex; align-items: center; gap: 10px;
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.pl-banner-icon { font-weight: 700; }
+.pl-banner-error { background: var(--red-bg); border: .5px solid rgba(163,45,45,.3); color: var(--danger); }
+.pl-banner-done  { background: var(--green-bg); border: .5px solid rgba(59,109,17,.3); color: var(--success); }
+
+/* ── Pick list table ────────────────────────────────────────────────── */
+.pl-table-wrap {
+  background: var(--bg);
+  border: .5px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+}
+.pl-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.pl-table thead th {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text3);
+  background: var(--bg2);
+  border-bottom: .5px solid var(--border);
+  white-space: nowrap;
+}
+.pl-table tbody td {
+  padding: 10px 12px;
+  border-bottom: .5px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+.pl-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pl-table thead th.pl-num { text-align: right; }
+.pl-item { font-weight: 600; white-space: nowrap; }
+.pl-desc { color: var(--text2); }
+.pl-muted { color: var(--text3); }
+
+/* Light-blue zebra striping (matches the spreadsheet pick list). */
+.pl-row-open:nth-of-type(odd) td   { background: #eef5fa; }
+.pl-row-open:nth-of-type(even) td  { background: var(--bg); }
+.pl-row-partial td { background: #fff8e6; }
+.pl-row-done td    { background: #eef6e6; color: var(--text2); }
+
+.pl-left { font-weight: 600; }
+.pl-left-done { color: var(--success); }
+
+.pl-lots { font-size: 11px; color: var(--text3); margin-top: 3px; font-family: var(--font-mono); }
+
+/* ── Scan log ───────────────────────────────────────────────────────── */
+.pl-log { }
+.pl-log-toggle {
+  background: none; border: none; cursor: pointer;
+  font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text2);
+  padding: 4px 0;
+}
+.pl-log-toggle:hover { color: var(--text); }
+.pl-log-body {
+  margin-top: 8px;
+  background: var(--bg);
+  border: .5px solid var(--border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+.pl-log-empty { padding: 14px 16px; color: var(--text3); font-size: 13px; }
+.pl-log-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.pl-log-table th {
+  padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .06em; color: var(--text3);
+  background: var(--bg2); border-bottom: .5px solid var(--border);
+}
+.pl-log-table td { padding: 8px 12px; border-bottom: .5px solid var(--border); color: var(--text); }
+
+/* ── Mobile ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .pl-top { flex-direction: column; gap: 14px; }
+  .pl-actions { align-items: stretch; width: 100%; }
+  .pl-totals { text-align: left; }
+  .pl-total-row { justify-content: space-between; }
+  .pl-clear, .pl-actions > .btn { align-self: stretch; justify-content: center; }
+  .pl-scanbar { flex-wrap: wrap; }
+  .pl-scan-hint { width: 100%; }
+  .scan-gate-input-row { flex-direction: column; }
+}
