@@ -607,6 +607,8 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
 .pl-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pl-table thead th.pl-num { text-align: right; }
 .pl-item { font-weight: 600; white-space: nowrap; }
+/* "Can be flipped from PMI stock" hint — soft amber, wraps under the item #. */
+.pl-flip-note { white-space: normal; max-width: 170px; margin-top: 3px; font-size: 11px; font-weight: 400; font-style: italic; color: var(--warn); }
 .pl-desc { color: var(--text2); }
 .pl-muted { color: var(--text3); }
 /* Live Zoho stock — light green so it reads as a live value without distracting. */

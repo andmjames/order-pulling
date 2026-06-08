@@ -299,7 +299,12 @@ export default function PickList({ order, onDone }) {
                   <td className="pl-num">{fmt(l.quantity)}</td>
                   <td>{l.unit}</td>
                   <td className="pl-num">{fmt(l.cases)}</td>
-                  <td className="pl-item">{l.item_number}</td>
+                  <td className="pl-item">
+                    {l.item_number}
+                    {l.canFlip && (
+                      <div className="pl-flip-note">This item can be flipped from PMI Stock</div>
+                    )}
+                  </td>
                   <td className="pl-desc">
                     {l.description}
                     {itemLots.length > 0 && (
