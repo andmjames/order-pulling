@@ -16,7 +16,9 @@ It shares the look, logo, and Zoho connection approach of the **Order Entry App*
    - If the order already has an **"Items Scanned Successfully"** comment, a prompt
      appears first: **Go Back** (load a different packing list) or **Clear Old Scans and
      Start Over** (scan this order's items again — a new comment is still posted afterward).
-2. The **Pick List** screen lists every line with its ordered **Qty**, **U/M**,
+2. Only **inventory items** are listed for scanning — non-inventory lines such as
+   "Credit Card Fee", shipping charges, and other services are skipped.
+3. The **Pick List** screen lists every line with its ordered **Qty**, **U/M**,
    **Cases**, **Item #**, **Description**, **Units/Case**, and **Cases left to Scan**.
 3. **Scan each case.** Case barcodes are in the format:
 

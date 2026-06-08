@@ -74,8 +74,40 @@ function customFields(item) {
     unitsPerCase: cf('Units per Case', 'Units per Carton', 'Units/Case', 'Units/Carton'),
     weightPerCase: cf('Weight per Case (LBS)', 'Weight Per Case (LBS)', 'Weight per Case', 'Weight Per Carton (LBS)'),
     casesPerPallet: cf('Cases per Pallet', 'Cartons per Pallet', 'Cases/Pallet', 'Cartons/Pallet'),
-    canFlip: ['yes', 'true'].includes(String(cf('Can Be Flipped From PMI Stock')).trim().toLowerCase()),
+    canFlip: canFlipFromPmiStock(item),
   };
+}
+
+// Treat common "yes"/checkbox representations as true.
+function isYes(v) {
+  if (v === true) return true;
+  return ['yes', 'true', '1', 'y', 'on'].includes(String(v == null ? '' : v).trim().toLowerCase());
+}
+
+// Robustly detect the "Can Be Flipped From PMI Stock" custom field. Zoho can
+// expose custom fields under custom_fields[] (label/value/value_formatted) or in
+// custom_field_hash{} (keys like cf_can_be_flipped_from_pmi_stock), and the value
+// may be a string ("Yes") or a boolean. Match any field whose label/key mentions
+// both "flip" and "pmi".
+function canFlipFromPmiStock(item) {
+  const looksLikeFlip = (s) => {
+    const t = String(s || '').toLowerCase();
+    return t.includes('flip') && t.includes('pmi');
+  };
+
+  const fields = Array.isArray(item.custom_fields) ? item.custom_fields : [];
+  for (const f of fields) {
+    if (looksLikeFlip(f.label) || looksLikeFlip(f.placeholder) || looksLikeFlip(f.api_name)) {
+      if (isYes(f.value) || isYes(f.value_formatted)) return true;
+    }
+  }
+
+  const hash = item.custom_field_hash && typeof item.custom_field_hash === 'object' ? item.custom_field_hash : {};
+  for (const [k, v] of Object.entries(hash)) {
+    if (looksLikeFlip(k) && isYes(v)) return true;
+  }
+
+  return false;
 }
 
 exports.handler = async (event) => {
@@ -109,10 +141,35 @@ exports.handler = async (event) => {
       });
     }
 
+    // Debug aid: dump each item's custom-field labels/values so the exact
+    // "Can Be Flipped From PMI Stock" label/value can be confirmed in Netlify logs.
+    try {
+      const dump = [...itemMap.values()].map((it) => ({
+        sku: it.sku,
+        custom_fields: (it.custom_fields || []).map((f) => ({ label: f.label, value: f.value, value_formatted: f.value_formatted })),
+        custom_field_hash_keys: Object.keys(it.custom_field_hash || {}),
+        canFlip: canFlipFromPmiStock(it),
+      }));
+      console.log('[flip-debug]', JSON.stringify(dump));
+    } catch (e) { /* ignore */ }
+
     let totalCases = 0;
     let palletFraction = 0;
 
-    const line_items = rawLines.map((li) => {
+    // Only inventory (stock) items are scannable. Drop services / fees like
+    // "Credit Card Fee", shipping charges, etc. A line is kept when its item is
+    // not a service and its item_type is "inventory" (or unknown — e.g. when the
+    // item detail couldn't be fetched, we keep it rather than risk dropping stock).
+    const isScannableInventory = (li) => {
+      const item = itemMap.get(li.item_id) || {};
+      const productType = String(item.product_type || li.product_type || '').toLowerCase();
+      if (productType === 'service') return false;
+      const itemType = String(item.item_type || li.item_type || '').toLowerCase();
+      if (!itemType) return true;
+      return itemType === 'inventory';
+    };
+
+    const line_items = rawLines.filter(isScannableInventory).map((li) => {
       const item = itemMap.get(li.item_id) || {};
       const extra = customFields(item);
       const unitsPerCase = num(extra.unitsPerCase, 0);
