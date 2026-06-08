@@ -138,6 +138,19 @@ exports.handler = async (event) => {
 
     const pallets = palletFraction > 0 ? Math.ceil(palletFraction) : totalCases > 0 ? 1 : 0;
 
+    // Has this order already been scanned successfully? Look for a prior
+    // "Items Scanned Successfully" comment (best-effort — don't fail the load).
+    let scanned_successfully = false;
+    try {
+      const cdata = await zohoGetRetry(`/salesorders/${found.salesorder_id}/comments`);
+      const comments = cdata.comments || [];
+      scanned_successfully = comments.some((c) =>
+        String(c.description || '').toLowerCase().includes('items scanned successfully')
+      );
+    } catch (e) {
+      console.warn('zoho-salesorder: could not read comments:', e.message);
+    }
+
     return {
       statusCode: 200,
       headers,
@@ -151,6 +164,7 @@ exports.handler = async (event) => {
         delivery_method: so.delivery_method || so.shipping_method || '',
         line_items,
         totals: { cases: Math.round(totalCases * 1000) / 1000, pallets },
+        scanned_successfully,
       }),
     };
   } catch (err) {

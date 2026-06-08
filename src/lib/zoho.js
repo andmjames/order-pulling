@@ -21,3 +21,11 @@ async function apiFetch(path, options = {}) {
 export async function fetchSalesOrder(number) {
   return apiFetch(`/zoho-salesorder?number=${encodeURIComponent(number)}`);
 }
+
+// Add a comment to the sales order (used to record the scan result).
+export async function postSalesOrderComment({ salesorderId, comment }) {
+  return apiFetch('/zoho-salesorder-comment', {
+    method: 'POST',
+    body: JSON.stringify({ salesorder_id: salesorderId, comment }),
+  });
+}

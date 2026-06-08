@@ -535,6 +535,7 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   align-items: flex-end;
   gap: 10px;
 }
+.pl-action-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .pl-totals { display: flex; flex-direction: column; gap: 2px; text-align: right; }
 .pl-total-row { display: flex; gap: 10px; justify-content: flex-end; font-size: 13.5px; }
 .pl-total-label { color: var(--text2); }
@@ -651,6 +652,8 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   .pl-totals { text-align: left; }
   .pl-total-row { justify-content: space-between; }
   .pl-clear, .pl-actions > .btn { align-self: stretch; justify-content: center; }
+  .pl-action-btns { width: 100%; }
+  .pl-action-btns .btn { flex: 1; justify-content: center; }
   .pl-scanbar { flex-wrap: wrap; }
   .pl-scan-hint { width: 100%; }
   .scan-gate-input-row { flex-direction: column; }

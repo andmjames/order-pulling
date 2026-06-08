@@ -13,6 +13,9 @@ It shares the look, logo, and Zoho connection approach of the **Order Entry App*
 
 1. **Scan the packing list barcode.** It encodes the **Sales Order number**. The app
    pulls that order from Zoho Inventory — draft, open, or closed all work.
+   - If the order already has an **"Items Scanned Successfully"** comment, a prompt
+     appears first: **Go Back** (load a different packing list) or **Clear Old Scans and
+     Start Over** (scan this order's items again — a new comment is still posted afterward).
 2. The **Pick List** screen lists every line with its ordered **Qty**, **U/M**,
    **Cases**, **Item #**, **Description**, **Units/Case**, and **Cases left to Scan**.
 3. **Scan each case.** Case barcodes are in the format:
@@ -29,8 +32,13 @@ It shares the look, logo, and Zoho connection approach of the **Order Entry App*
 
    Either one shows a red banner and blocks further scanning until you press **Clear**.
 5. **Clear** wipes every scan for the order so you can restart scanning the same order.
-6. **Done Scanning** returns to the barcode screen for the next order (it confirms first
-   if cases are still outstanding).
+6. **Done Scanning** posts a comment to the sales order in Zoho summarizing the result,
+   then returns to the barcode screen for the next order:
+   - All items scanned correctly → comment headed **"Items Scanned Successfully"**, listing
+     each item number with the lot numbers scanned.
+   - Anything missing/wrong/over-scanned → comment headed **"Items Scanned UNSUCCESSFULLY"**,
+     listing the scanned items and lots plus an **Issues** section (short items, wrong items,
+     over-scans). It confirms first before posting an unsuccessful comment.
 
 Captured lot numbers appear under each row and in the collapsible **Scan log**.
 
@@ -47,7 +55,7 @@ browser. Set these in **Netlify → Site settings → Environment variables**:
 | `ZOHO_CLIENT_SECRET` | yes | |
 | `ZOHO_ORGANIZATION_ID` | yes | |
 | `ZOHO_REFRESH_TOKEN` | optional | Set for the refresh-token grant. Leave unset to use the client-credentials grant (same as the Order Entry App). |
-| `ZOHO_SCOPE` | optional | Defaults include `ZohoInventory.salesorders.READ` + `ZohoInventory.items.READ`. |
+| `ZOHO_SCOPE` | optional | Defaults include `ZohoInventory.salesorders.READ` + `.CREATE` (needed to post the scan-result comment) + `ZohoInventory.items.READ`. |
 | `ZOHO_DOMAIN` | optional | Only if you are not on Zoho US. |
 
 You can copy the same Zoho values you already use for the Order Entry App.

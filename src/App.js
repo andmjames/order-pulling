@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
 import ScanGate from './components/ScanGate';
 import PickList from './components/PickList';
+import ScannedNoticeModal from './components/ScannedNoticeModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './components/Toast';
 import { LOGO_SRC } from './logo';
 import './App.css';
 
 export default function App() {
-  const [order, setOrder] = useState(null); // loaded sales order, or null
+  const [order, setOrder] = useState(null);       // loaded sales order, or null
+  const [showNotice, setShowNotice] = useState(false); // already-scanned warning
+
+  const handleLoaded = (o) => {
+    setOrder(o);
+    setShowNotice(!!o.scanned_successfully);
+  };
+
+  const goBack = () => { setOrder(null); setShowNotice(false); };
 
   return (
     <ErrorBoundary>
@@ -23,9 +32,15 @@ export default function App() {
 
           <main className="app-main">
             {!order ? (
-              <ScanGate onLoaded={setOrder} />
+              <ScanGate onLoaded={handleLoaded} />
+            ) : showNotice ? (
+              <ScannedNoticeModal
+                order={order}
+                onGoBack={goBack}
+                onStartOver={() => setShowNotice(false)}
+              />
             ) : (
-              <PickList order={order} onDone={() => setOrder(null)} />
+              <PickList order={order} onDone={goBack} />
             )}
           </main>
         </div>
