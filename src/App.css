@@ -655,3 +655,9 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   .pl-scan-hint { width: 100%; }
   .scan-gate-input-row { flex-direction: column; }
 }
+
+/* ── Disable zoom gestures (pinch + double-tap) ─────────────────────── */
+html, body {
+  touch-action: pan-x pan-y;   /* allow scrolling, block pinch-zoom */
+  -ms-touch-action: pan-x pan-y;
+}

@@ -39,10 +39,9 @@ export default function ScanGate({ onLoaded }) {
     <div className="scan-gate">
       <div className="scan-card">
         <div className="scan-card-eyebrow">Order Pulling</div>
-        <h1 className="scan-card-title">Scan packing list barcode</h1>
+        <h1 className="scan-card-title">Scan Packing List</h1>
         <p className="scan-card-sub">
-          Scan or type the Sales Order number to load the order from Zoho Inventory.
-          Draft, open, and closed orders all work.
+          Scan or type the invoice number to load the order from Zoho Inventory.
         </p>
 
         <div className="scan-gate-input-row">
