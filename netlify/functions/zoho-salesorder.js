@@ -122,6 +122,16 @@ exports.handler = async (event) => {
       totalCases += cases;
       if (casesPerPallet > 0) palletFraction += cases / casesPerPallet;
 
+      // Live "on hand" stock (units) from Zoho → converted to cases for display.
+      const onHandRaw =
+        item.stock_on_hand != null && item.stock_on_hand !== ''
+          ? Number(item.stock_on_hand)
+          : null;
+      const casesOnHand =
+        onHandRaw == null
+          ? null
+          : Math.round((unitsPerCase > 0 ? onHandRaw / unitsPerCase : onHandRaw) * 1000) / 1000;
+
       return {
         item_id: li.item_id,
         item_number: item.sku || li.sku || li.name || '',
@@ -133,6 +143,7 @@ exports.handler = async (event) => {
         weightPerCase: num(extra.weightPerCase, 0),
         casesPerPallet,
         cases: Math.round(cases * 1000) / 1000,
+        casesOnHand,
       };
     });
 

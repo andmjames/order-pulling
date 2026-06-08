@@ -284,6 +284,7 @@ export default function PickList({ order, onDone }) {
               <th className="pl-num">Cases</th>
               <th>Item #</th>
               <th>Description</th>
+              <th className="pl-num">Cases on Hand</th>
               <th className="pl-num">Units/Case</th>
               <th className="pl-num">Cases left to Scan</th>
             </tr>
@@ -305,6 +306,7 @@ export default function PickList({ order, onDone }) {
                       <div className="pl-lots">Lots: {itemLots.join(', ')}</div>
                     )}
                   </td>
+                  <td className="pl-num pl-onhand">{l.casesOnHand == null ? '—' : fmt(l.casesOnHand)}</td>
                   <td className="pl-num pl-muted">{l.unitsPerCase ? fmt(l.unitsPerCase) : '—'}</td>
                   <td className={`pl-num pl-left ${left <= 1e-4 ? 'pl-left-done' : ''}`}>{fmt(left)}</td>
                 </tr>

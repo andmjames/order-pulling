@@ -609,6 +609,8 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
 .pl-item { font-weight: 600; white-space: nowrap; }
 .pl-desc { color: var(--text2); }
 .pl-muted { color: var(--text3); }
+/* Live Zoho stock — light green so it reads as a live value without distracting. */
+.pl-onhand { color: #7bb274; }
 
 /* Light-blue zebra striping (matches the spreadsheet pick list). */
 .pl-row-open:nth-of-type(odd) td   { background: #eef5fa; }
