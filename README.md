@@ -26,6 +26,18 @@ It shares the look, logo, and Zoho connection approach of the **Order Entry App*
 
    e.g. `RIS2260,36,LOT24A`. Each scan reduces **Cases left to Scan** for that item
    (by `Quantity ÷ Units per Case`) and stores the lot number.
+
+   **Nazdar Company** cases use a different, self-identifying format that the app
+   auto-detects and converts:
+
+   ```
+   ]C1ITNO<alias>|BANO<lot>|QTY<units×1000>
+   ```
+
+   e.g. `]C1ITNOIMS84513|BANO406086|QTY24000` → item `NAZ3451` (alias mapped to our
+   item number), lot `406086`, qty `24`. The Nazdar alias → item-number list is small
+   and fixed, so it lives in code at `src/lib/nazdar.js` (not in Supabase). Add or edit
+   rows there if Nazdar items change.
 4. **Warnings (immediate, stop-and-restart):**
    - **Wrong item** — the scanned item isn't on the order.
    - **Too many** — scanning that case would exceed the ordered quantity.

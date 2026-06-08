@@ -54,9 +54,18 @@ export default function PickList({ order, onDone }) {
   const handleScan = (raw) => {
     if (blockedError) return; // must Clear before scanning resumes
     const parsed = parseScan(raw);
-    if (!parsed) return;
+    if (!parsed) return; // empty input — ignore
+
+    // A barcode that doesn't match a recognized item format (standard or Nazdar)
+    // is treated as an incorrect item scanned: stop and force a restart.
     if (!parsed.ok) {
-      toast('Unreadable barcode — expected Item,Qty,Lot', 'error');
+      const shown = String(parsed.raw || raw || '').trim();
+      const label = shown.length > 40 ? `${shown.slice(0, 40)}…` : shown || '(unreadable)';
+      const base = parsed.message || `Incorrect item scanned: "${label}" is not a recognized item barcode.`;
+      const msg = `${base} Press Clear and start over.`;
+      setBlockedError(msg);
+      setRejects((r) => [...r, { item: label, qty: 0, lot: '', reason: 'bad_format' }]);
+      toast(msg, 'error');
       return;
     }
 
@@ -151,8 +160,9 @@ export default function PickList({ order, onDone }) {
         .filter(Boolean);
       const wrong = rejects.filter((r) => r.reason === 'wrong_item').map((r) => `- Wrong item: ${r.item} (not on order)`);
       const over = rejects.filter((r) => r.reason === 'too_many').map((r) => `- Over-scan: ${r.item} (exceeded ordered quantity)`);
+      const bad = rejects.filter((r) => r.reason === 'bad_format').map((r) => `- Unrecognized barcode: ${r.item}`);
 
-      const issues = [...short, ...wrong, ...over];
+      const issues = [...short, ...wrong, ...over, ...bad];
       if (issues.length) {
         out.push('');
         out.push('Issues:');
