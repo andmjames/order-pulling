@@ -38,6 +38,12 @@ It shares the look, logo, and Zoho connection approach of the **Order Entry App*
    item number), lot `406086`, qty `24`. The Nazdar alias → item-number list is small
    and fixed, so it lives in code at `src/lib/nazdar.js` (not in Supabase). Add or edit
    rows there if Nazdar items change.
+
+   Two Nazdar items — **PMI3321** and **NAZ4451** — encode their `QTY` in **cases**
+   instead of units (e.g. `QTY1000` → 1 case). The app multiplies by the item's
+   Units/Case to get units, so `]C1ITNOPMI3213X110CS|BANO123456|QTY1000` counts as
+   24 rolls (1 case). That item list is the `NAZDAR_CASES_QTY_ITEMS` set in
+   `src/lib/nazdar.js`.
 4. **Warnings (immediate, stop-and-restart):**
    - **Wrong item** — the scanned item isn't on the order.
    - **Too many** — scanning that case would exceed the ordered quantity.

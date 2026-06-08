@@ -47,12 +47,18 @@ export const NAZDAR_ALIAS_TO_ITEM = {
   "PMI3260 SKID": "PMI3260SKID",
 };
 
+// For these (our) item numbers, the Nazdar QTY value (after ÷1000) is a number of
+// CASES rather than units, e.g. QTY1000 → 1 case. The caller multiplies by the
+// item's Units/Case to get units. This is only these two items.
+export const NAZDAR_CASES_QTY_ITEMS = new Set(['PMI3321', 'NAZ4451']);
+
 // A Nazdar barcode is identified by the "ITNO" token (every alias contains it).
 export function isNazdarBarcode(s) {
   return /ITNO/i.test(String(s || ''));
 }
 
 // Parse a Nazdar barcode into the common { ok, item, qty, lot, raw } shape.
+// `qtyUnit` is 'cases' for the two case-quantity items above, otherwise 'units'.
 export function parseNazdar(raw) {
   const s = String(raw || '').trim();
   // Segments are separated by "|" (or the GS control char some scanners emit).
@@ -82,5 +88,6 @@ export function parseNazdar(raw) {
   if (!isFinite(qty) || qty <= 0) {
     return { ok: false, raw: s, reason: 'format', message: 'Unreadable Nazdar barcode — missing QTY.' };
   }
-  return { ok: true, item, qty, lot, raw: s };
+  const qtyUnit = NAZDAR_CASES_QTY_ITEMS.has(item) ? 'cases' : 'units';
+  return { ok: true, item, qty, lot, raw: s, qtyUnit };
 }

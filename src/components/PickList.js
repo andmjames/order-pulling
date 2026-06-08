@@ -81,13 +81,20 @@ export default function PickList({ order, onDone }) {
       return;
     }
 
+    // Quantity is normally in units. For the two Nazdar case-quantity items the
+    // barcode QTY is a number of CASES, so convert to units via Units/Case.
+    const addUnits =
+      parsed.qtyUnit === 'cases' && line.unitsPerCase > 0
+        ? parsed.qty * line.unitsPerCase
+        : parsed.qty;
+
     // Too many — scanning this case would exceed the ordered quantity.
     const prev = scanned[k] || 0;
-    const next = prev + parsed.qty;
+    const next = prev + addUnits;
     if (next > line.quantity + EPS) {
       const msg = `Too many scanned for ${line.item_number}: ${fmt(next)} of ${fmt(line.quantity)} units. Press Clear and start over.`;
       setBlockedError(msg);
-      setRejects((r) => [...r, { item: line.item_number, qty: parsed.qty, lot: parsed.lot, reason: 'too_many' }]);
+      setRejects((r) => [...r, { item: line.item_number, qty: addUnits, lot: parsed.lot, reason: 'too_many' }]);
       toast(msg, 'error');
       return;
     }
@@ -95,7 +102,7 @@ export default function PickList({ order, onDone }) {
     // Apply the scan: reduce cases-left and store the lot number.
     setScanned((s) => ({ ...s, [k]: next }));
     setLots((m) => ({ ...m, [k]: [...(m[k] || []), parsed.lot].filter(Boolean) }));
-    setLog((l) => [{ item: line.item_number, qty: parsed.qty, lot: parsed.lot, ts: Date.now() }, ...l]);
+    setLog((l) => [{ item: line.item_number, qty: addUnits, lot: parsed.lot, ts: Date.now() }, ...l]);
 
     if (next > line.quantity - EPS) {
       toast(`${line.item_number} complete`, 'success');
