@@ -123,7 +123,7 @@ exports.handler = async (event) => {
       totalCases += cases;
       if (casesPerPallet > 0) palletFraction += cases / casesPerPallet;
 
-      // Live "on hand" stock (units) from Zoho → converted to cases for display.
+      // Live "on hand" stock (units) from Zoho → whole cases (rounded down).
       const onHandRaw =
         item.stock_on_hand != null && item.stock_on_hand !== ''
           ? Number(item.stock_on_hand)
@@ -131,7 +131,7 @@ exports.handler = async (event) => {
       const casesOnHand =
         onHandRaw == null
           ? null
-          : Math.round((unitsPerCase > 0 ? onHandRaw / unitsPerCase : onHandRaw) * 1000) / 1000;
+          : Math.floor(unitsPerCase > 0 ? onHandRaw / unitsPerCase : onHandRaw);
 
       return {
         item_id: li.item_id,

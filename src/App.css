@@ -620,7 +620,7 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
 .pl-row-partial td { background: #fff8e6; }
 .pl-row-done td    { background: #eef6e6; color: var(--text2); }
 
-.pl-left { font-weight: 600; }
+.pl-left { font-weight: 800; font-size: 16px; }
 .pl-left-done { color: var(--success); }
 
 .pl-lots { font-size: 11px; color: var(--text3); margin-top: 3px; font-family: var(--font-mono); }
