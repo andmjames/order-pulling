@@ -20,17 +20,16 @@ async function zohoGetRetry(path, attempts = 3) {
 }
 
 const norm = (s) => String(s || '').trim().toLowerCase();
-const digits = (s) => String(s || '').replace(/[^0-9]/g, '');
 const num = (v, d = 0) => {
   const n = parseFloat(String(v).replace(/[^0-9.\-]/g, ''));
   return isNaN(n) ? d : n;
 };
 
-// Find the sales order header matching the scanned value. We try the exact
-// salesorder_number filter first, then a broad search_text, then reference_number.
+// Find the sales order whose number EXACTLY matches the entered/scanned value.
+// Partial entries (e.g. "36") must NOT resolve to a longer number ("36611").
 async function findSalesOrder(raw) {
   const target = norm(raw);
-  const targetDigits = digits(raw);
+  if (!target) return null;
 
   const tryList = async (path) => {
     try {
@@ -41,23 +40,15 @@ async function findSalesOrder(raw) {
     }
   };
 
-  // 1) Exact salesorder_number filter.
-  let list = await tryList(`/salesorders?salesorder_number=${encodeURIComponent(raw)}`);
-  let hit = list.find((so) => norm(so.salesorder_number) === target);
+  // The salesorder_number filter can return near-matches (Zoho does a contains-style
+  // search), and search_text is broader still — so in BOTH cases we only accept a
+  // result whose salesorder_number is exactly equal to what was entered.
+  const exact = (list) => list.find((so) => norm(so.salesorder_number) === target) || null;
+
+  let hit = exact(await tryList(`/salesorders?salesorder_number=${encodeURIComponent(raw)}`));
   if (hit) return hit;
 
-  // 2) Broad search (covers SO number with/without prefix, reference #, etc.).
-  list = await tryList(`/salesorders?search_text=${encodeURIComponent(raw)}`);
-  hit =
-    list.find((so) => norm(so.salesorder_number) === target) ||
-    list.find((so) => norm(so.reference_number) === target) ||
-    (targetDigits && list.find((so) => digits(so.salesorder_number) === targetDigits)) ||
-    list[0];
-  if (hit) return hit;
-
-  // 3) Reference number (customer PO) filter as a last resort.
-  list = await tryList(`/salesorders?reference_number=${encodeURIComponent(raw)}`);
-  hit = list.find((so) => norm(so.reference_number) === target) || list[0];
+  hit = exact(await tryList(`/salesorders?search_text=${encodeURIComponent(raw)}`));
   return hit || null;
 }
 
@@ -122,7 +113,7 @@ exports.handler = async (event) => {
 
     const found = await findSalesOrder(number);
     if (!found) {
-      return { statusCode: 404, headers, body: JSON.stringify({ error: `No sales order found for "${number}"` }) };
+      return { statusCode: 404, headers, body: JSON.stringify({ error: 'Order not found. Scan again' }) };
     }
 
     // Line items live on the full detail record.
