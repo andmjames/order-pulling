@@ -26,6 +26,10 @@ export default function PickList({ order, onDone }) {
     return m;
   }, [lines]);
 
+  // Adidas Indy LLC items are stored with a leading "S" (e.g. SPOL2221) but their
+  // barcodes omit it (POL2221). On Adidas orders we accept the no-"S" form.
+  const isAdidas = /adidas/i.test(order.customer_name || '');
+
   const focusScan = useCallback(() => {
     setTimeout(() => inputRef.current?.focus(), 0);
   }, []);
@@ -69,8 +73,14 @@ export default function PickList({ order, onDone }) {
       return;
     }
 
-    const k = keyOf(parsed.item);
-    const line = lineByKey.get(k);
+    // Resolve the scanned token to an order line. On Adidas orders, if the raw
+    // token isn't on the order, accept the "S"-prefixed item if that is (POL2221 → SPOL2221).
+    let k = keyOf(parsed.item);
+    let line = lineByKey.get(k);
+    if (!line && isAdidas) {
+      const sLine = lineByKey.get(`S${k}`);
+      if (sLine) { k = `S${k}`; line = sLine; }
+    }
 
     // Wrong item — not on this order.
     if (!line) {
@@ -81,10 +91,15 @@ export default function PickList({ order, onDone }) {
       return;
     }
 
-    // Quantity is normally in units. For the two Nazdar case-quantity items the
-    // barcode QTY is a number of CASES, so convert to units via Units/Case.
-    const addUnits =
-      parsed.qtyUnit === 'cases' && line.unitsPerCase > 0
+    // How many units this scan represents.
+    //  • Adidas S-items: each scan = exactly 1 case, regardless of the barcode qty.
+    //  • Nazdar case-quantity items: barcode QTY is cases → convert to units.
+    //  • Everything else: barcode QTY is units.
+    const oneCaseUnits = line.unitsPerCase > 0 ? line.unitsPerCase : 1;
+    const adidasCaseItem = isAdidas && /^S/i.test(line.item_number);
+    const addUnits = adidasCaseItem
+      ? oneCaseUnits
+      : parsed.qtyUnit === 'cases' && line.unitsPerCase > 0
         ? parsed.qty * line.unitsPerCase
         : parsed.qty;
 
