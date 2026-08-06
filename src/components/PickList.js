@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { parseScan, fmt, EPS } from '../lib/scan';
+import { isNazdarBarcode } from '../lib/nazdar';
 import { postSalesOrderComment } from '../lib/zoho';
 import { useToast } from './Toast';
 
@@ -29,6 +30,10 @@ export default function PickList({ order, onDone }) {
   // Adidas Indy LLC items are stored with a leading "S" (e.g. SPOL2221) but their
   // barcodes omit it (POL2221). On Adidas orders we accept the no-"S" form.
   const isAdidas = /adidas/i.test(order.customer_name || '');
+
+  // Nazdar orders must be scanned with the special Nazdar barcode format; a
+  // standard barcode on a Nazdar order is treated as the wrong item.
+  const isNazdarOrder = /nazdar/i.test(order.customer_name || '');
 
   const focusScan = useCallback(() => {
     setTimeout(() => inputRef.current?.focus(), 0);
@@ -69,6 +74,16 @@ export default function PickList({ order, onDone }) {
       const msg = `${base} Press Clear and start over.`;
       setBlockedError(msg);
       setRejects((r) => [...r, { item: label, qty: 0, lot: '', reason: 'bad_format' }]);
+      toast(msg, 'error');
+      return;
+    }
+
+    // On Nazdar orders, only the special Nazdar barcode format is valid. A
+    // standard-format barcode is treated as the wrong item.
+    if (isNazdarOrder && !isNazdarBarcode(raw)) {
+      const msg = `Wrong item scanned: "${parsed.item}" must be scanned using the Nazdar barcode. Press Clear and start over.`;
+      setBlockedError(msg);
+      setRejects((r) => [...r, { item: parsed.item, qty: parsed.qty, lot: parsed.lot, reason: 'wrong_item' }]);
       toast(msg, 'error');
       return;
     }
