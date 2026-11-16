@@ -23,6 +23,9 @@ export const AMAZON_BARCODES = {
   X002SKKWWH: { item: 'PMID1', units: 1 },
   X001ROXSKD: { item: 'PMI2451FA', units: 36 },
   X000NGHRU3: { item: 'PMID2', units: 1 },
+  X005F5N12F: { item: 'PMI3560', units: 24 },
+  X005F5MYXH: { item: 'PMI2560', units: 36 },
+  X005F5MZV3: { item: 'PMI4560', units: 18 },
 };
 
 // Compare codes with the look-alike characters folded together (O/0 and I/1),
