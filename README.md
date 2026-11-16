@@ -46,6 +46,10 @@ It shares the look, logo, and Zoho connection approach of the **Order Entry App*
    Units/Case to get units, so `]C1ITNOPMI3213X110CS|BANO123456|QTY1000` counts as
    24 rolls (1 case). That item list is the `NAZDAR_CASES_QTY_ITEMS` set in
    `src/lib/nazdar.js`.
+   **Amazon** orders accept *only* Amazon's own barcodes (e.g. `X000NGE0DF`). Each one
+   maps to our item number and a fixed units-per-scan (one scan of `X000NGE0DF` = 36 rolls
+   of PMI2451). Our standard barcodes are rejected as a wrong item on Amazon orders. The
+   barcode list lives in `src/lib/amazon.js`.
 4. **Warnings (immediate, stop-and-restart):**
    - **Wrong item** — the scanned item isn't on the order.
    - **Too many** — scanning that case would exceed the ordered quantity.

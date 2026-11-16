@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { parseScan, fmt, EPS } from '../lib/scan';
 import { isNazdarBarcode } from '../lib/nazdar';
+import { parseAmazon } from '../lib/amazon';
 import { postSalesOrderComment } from '../lib/zoho';
 import { useToast } from './Toast';
 
@@ -35,6 +36,10 @@ export default function PickList({ order, onDone }) {
   // standard barcode on a Nazdar order is treated as the wrong item.
   const isNazdarOrder = /nazdar/i.test(order.customer_name || '');
 
+  // Amazon orders are scanned with Amazon's own barcodes only (see lib/amazon.js);
+  // our standard barcode format is not accepted on them.
+  const isAmazonOrder = /amazon/i.test(order.customer_name || '');
+
   const focusScan = useCallback(() => {
     setTimeout(() => inputRef.current?.focus(), 0);
   }, []);
@@ -62,7 +67,7 @@ export default function PickList({ order, onDone }) {
   // ── Scan handling ─────────────────────────────────────────────────────────
   const handleScan = (raw) => {
     if (blockedError) return; // must Clear before scanning resumes
-    const parsed = parseScan(raw);
+    const parsed = isAmazonOrder ? parseAmazon(raw) : parseScan(raw);
     if (!parsed) return; // empty input — ignore
 
     // A barcode that doesn't match a recognized item format (standard or Nazdar)
@@ -181,7 +186,10 @@ export default function PickList({ order, onDone }) {
     const scannedRows = lines
       .map((l) => {
         const arr = lots[keyOf(l.item_number)] || [];
-        return arr.length ? `${l.item_number}: ${aggregateLots(arr)}` : null;
+        if (arr.length) return `${l.item_number}: ${aggregateLots(arr)}`;
+        // Scanned without a lot number (e.g. Amazon barcodes carry no lot).
+        const u = scanned[keyOf(l.item_number)] || 0;
+        return u > 0 ? `${l.item_number}: ${fmt(u)} units scanned (no lot #)` : null;
       })
       .filter(Boolean);
 
@@ -295,7 +303,7 @@ export default function PickList({ order, onDone }) {
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Item,Qty,Lot"
+            placeholder={isAmazonOrder ? 'Amazon barcode' : 'Item,Qty,Lot'}
             autoComplete="off"
             autoCapitalize="off"
             spellCheck={false}
