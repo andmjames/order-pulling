@@ -49,8 +49,8 @@ export const NAZDAR_ALIAS_TO_ITEM = {
 
 // For these (our) item numbers, the Nazdar QTY value (after ÷1000) is a number of
 // CASES rather than units, e.g. QTY1000 → 1 case. The caller multiplies by the
-// item's Units/Case to get units. This is only these two items.
-export const NAZDAR_CASES_QTY_ITEMS = new Set(['PMI3321', 'NAZ4451']);
+// item's Units/Case to get units. This is only these items.
+export const NAZDAR_CASES_QTY_ITEMS = new Set(['PMI3321', 'NAZ4451', 'PMI3560']);
 
 // A Nazdar barcode is identified by the "ITNO" token (every alias contains it).
 export function isNazdarBarcode(s) {

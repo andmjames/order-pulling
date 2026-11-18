@@ -41,7 +41,7 @@ It shares the look, logo, and Zoho connection approach of the **Order Entry App*
    and fixed, so it lives in code at `src/lib/nazdar.js` (not in Supabase). Add or edit
    rows there if Nazdar items change.
 
-   Two Nazdar items — **PMI3321** and **NAZ4451** — encode their `QTY` in **cases**
+   Three Nazdar items — **PMI3321**, **NAZ4451** and **PMI3560** — encode their `QTY` in **cases**
    instead of units (e.g. `QTY1000` → 1 case). The app multiplies by the item's
    Units/Case to get units, so `]C1ITNOPMI3213X110CS|BANO123456|QTY1000` counts as
    24 rolls (1 case). That item list is the `NAZDAR_CASES_QTY_ITEMS` set in
